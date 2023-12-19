@@ -7,7 +7,15 @@ const KanbanBoard = () => {
 	const tempData = [...data];
 
 	const handleDragEnd = (result: any) => {
-		console.log("result", result);
+		console.log("End", result);
+	};
+
+	const handleDragStart = (result: any) => {
+		console.log("start", result);
+	};
+
+	const handleDragUpdate = (result: any) => {
+		console.log("update", result);
 	};
 
 	// let columnsWithIssues: any = {};
@@ -18,7 +26,11 @@ const KanbanBoard = () => {
 	// console.log("columnsWithIssues", columnsWithIssues);
 
 	return (
-		<DragDropContext onDragEnd={handleDragEnd}>
+		<DragDropContext
+			onDragEnd={handleDragEnd}
+			onDragStart={handleDragStart}
+			onDragUpdate={handleDragUpdate}
+		>
 			<div className="m-10">
 				<div className="min-h-[550px] w-full overflow-x-auto flex gap-8">
 					{tempData.map((item: any) => (
