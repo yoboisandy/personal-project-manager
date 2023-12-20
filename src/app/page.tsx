@@ -1,4 +1,4 @@
-import KanbanBoard from "@/components/KanbanBoard/KanbanBoard";
+import KanbanBoard from "@/components/KanbanBoardGridDnD/KanbanBoard";
 
 export default function Home() {
 	return <KanbanBoard />;
