@@ -20,7 +20,7 @@ const BoardColumn = ({
 	});
 
 	return (
-		<div className="w-[324px] flex flex-col gap-4">
+		<div className="min-w-[340px] max-w-[340px] flex flex-col gap-4">
 			<div className="text-lg font-semibold bg-gray-50 p-2 rounded-t-lg">
 				{title}
 			</div>
@@ -30,7 +30,7 @@ const BoardColumn = ({
 				strategy={rectSortingStrategy}
 			>
 				<div
-					className="gap-2 bg-gray-50 p-2 min-h-[500px] overflow-y-auto"
+					className="gap-2 bg-gray-50 p-2 min-h-[500px] overflow-y-auto no-scrollbar"
 					ref={setNodeRef}
 				>
 					<Grid columns={2}>
