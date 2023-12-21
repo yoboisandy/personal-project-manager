@@ -5,19 +5,26 @@ import {
 	KeyboardSensor,
 	PointerSensor,
 	closestCorners,
+	useDroppable,
 	useSensor,
 	useSensors,
 } from "@dnd-kit/core";
 import BoardColumn from "./BoardColumn";
 import { sprintBoardData as data } from "./utils";
-import { arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
+import {
+	SortableContext,
+	arrayMove,
+	rectSortingStrategy,
+	sortableKeyboardCoordinates,
+} from "@dnd-kit/sortable";
 import { useEffect, useState } from "react";
 import { Card } from "./Task";
 
 const KanbanBoard = () => {
-	const tempData = [...data];
+	const [tempData, setTempData] = useState<any>(data);
 	const issues = tempData.map((item: any) => item.issues).flat();
 	const [activeIssue, setActiveIssue]: any = useState();
+	const [activeContainer, setActiveContainer] = useState<any>(null);
 	const [items, setItems] = useState<any>(null);
 
 	const sensors = useSensors(
@@ -33,9 +40,13 @@ const KanbanBoard = () => {
 			temp[item.id] = item.issues;
 		});
 		setItems(temp);
-	}, []);
+	}, [tempData]);
 
 	const handleDragStart = (event: any) => {
+		if (event.active.id in items) {
+			setActiveContainer(event.active.id);
+			return;
+		}
 		setActiveIssue(issues?.find((item: any) => item.id == event.active.id));
 	};
 
@@ -47,15 +58,34 @@ const KanbanBoard = () => {
 		});
 	}
 
+	const handleDragEnd = (event: any) => {
+		setActiveIssue(null);
+		setActiveContainer(null);
+	};
+
 	function handleDragOver(event: any) {
 		console.log("drag over", event);
 		const { active, over, draggingRect } = event;
 		const { id } = active;
 		const { id: overId } = over;
 
+		if (id in items && overId in items && id != overId) {
+			setTempData((prev: any) => {
+				const activeIndex = prev.findIndex(
+					(item: any) => item.id == id
+				);
+				const overIndex = prev.findIndex(
+					(item: any) => item.id == overId
+				);
+
+				return arrayMove(prev, activeIndex, overIndex);
+			});
+			return;
+		}
+
 		// Find the containers
-		const activeContainer = findContainer(id);
-		const overContainer = findContainer(overId);
+		const activeContainer: any = findContainer(id);
+		const overContainer: any = findContainer(overId);
 
 		if (!activeContainer || !overContainer) {
 			return;
@@ -146,6 +176,10 @@ const KanbanBoard = () => {
 		});
 	}
 
+	const { setNodeRef } = useDroppable({
+		id: "board",
+	});
+
 	return (
 		items && (
 			<DndContext
@@ -153,10 +187,17 @@ const KanbanBoard = () => {
 				sensors={sensors}
 				onDragStart={handleDragStart}
 				onDragOver={handleDragOver}
+				onDragEnd={handleDragEnd}
 			>
-				{/* onDragEnd={handleDragEnd} */}
-				<div className="m-10">
-					<div className="min-h-[550px] w-full overflow-x-auto no-scrollbar flex gap-8">
+				<SortableContext
+					items={tempData}
+					strategy={rectSortingStrategy}
+					id="board"
+				>
+					<div
+						className="m-10 min-h-[550px] w-full overflow-x-auto no-scrollbar flex gap-8"
+						ref={setNodeRef}
+					>
 						{tempData.map((item: any) => (
 							<BoardColumn
 								key={`${item.id}`}
@@ -166,7 +207,7 @@ const KanbanBoard = () => {
 							/>
 						))}
 					</div>
-				</div>
+				</SortableContext>
 				<DragOverlay
 					dropAnimation={{
 						duration: 500,
@@ -183,7 +224,17 @@ const KanbanBoard = () => {
 							index={0}
 							id={activeIssue?.id}
 						/>
-					) : null}
+					) : (
+						<BoardColumn
+							id={activeContainer}
+							title={
+								tempData.find(
+									(item: any) => item.id == activeContainer
+								)?.name
+							}
+							issues={items[activeContainer]}
+						/>
+					)}
 				</DragOverlay>
 			</DndContext>
 		)

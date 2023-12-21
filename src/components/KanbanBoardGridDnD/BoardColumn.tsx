@@ -3,8 +3,13 @@ import React, { useState } from "react";
 import Task from "./Task";
 import { colors } from "./utils";
 import { useDroppable } from "@dnd-kit/core";
-import { SortableContext, rectSortingStrategy } from "@dnd-kit/sortable";
+import {
+	SortableContext,
+	rectSortingStrategy,
+	useSortable,
+} from "@dnd-kit/sortable";
 import Grid from "./Grid";
+import { CSS } from "@dnd-kit/utilities";
 
 const BoardColumn = ({
 	title,
@@ -19,8 +24,32 @@ const BoardColumn = ({
 		id: id,
 	});
 
+	console.log("issues" + id, issues);
+
+	const {
+		isDragging,
+		attributes,
+		listeners,
+		setNodeRef: setNodeRef2,
+		transform,
+		transition,
+	} = useSortable({
+		id: id,
+	});
+
+	const style = {
+		transform: CSS.Transform.toString(transform),
+		transition,
+	};
+
 	return (
-		<div className="min-w-[340px] max-w-[340px] flex flex-col gap-4">
+		<div
+			className="min-w-[340px] max-w-[340px] flex flex-col gap-4"
+			style={style}
+			{...attributes}
+			{...listeners}
+			ref={setNodeRef2}
+		>
 			<div className="text-lg font-semibold bg-gray-50 p-2 rounded-t-lg">
 				{title}
 			</div>
