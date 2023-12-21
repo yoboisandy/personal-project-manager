@@ -35,7 +35,13 @@ const Task = ({
 	};
 
 	return (
-		<div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+		<div
+			className="flex"
+			ref={setNodeRef}
+			style={style}
+			{...attributes}
+			{...listeners}
+		>
 			<Card
 				color={color}
 				task={task}

@@ -1,15 +1,7 @@
 const Grid = ({ children, columns }: any) => {
 	return (
 		<div
-			style={{
-				display: "grid",
-				gridTemplateColumns: `repeat(${columns}, 1fr)`,
-				gridGap: 10,
-				maxWidth: "800px",
-				// minHeight: "550px",
-				// maxHeight: "550px",
-				margin: "",
-			}}
+			className={`grid grid-cols-${columns} items-start gap-2 bg-gray-50 p-2 overflow-y-auto no-scrollbar`}
 		>
 			{children}
 		</div>

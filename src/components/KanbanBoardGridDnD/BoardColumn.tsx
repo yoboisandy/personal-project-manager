@@ -30,7 +30,7 @@ const BoardColumn = ({
 				strategy={rectSortingStrategy}
 			>
 				<div
-					className="gap-2 bg-gray-50 p-2 min-h-[500px] overflow-y-auto no-scrollbar"
+					className="bg-gray-50 p-2 min-h-[500px] max-h-[500px] overflow-y-auto no-scrollbar"
 					ref={setNodeRef}
 				>
 					<Grid columns={2}>
