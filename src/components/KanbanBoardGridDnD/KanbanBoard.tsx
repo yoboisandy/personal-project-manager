@@ -1,12 +1,10 @@
 "use client";
 import {
 	DndContext,
-	DragOverEvent,
 	DragOverlay,
 	KeyboardSensor,
 	PointerSensor,
 	closestCorners,
-	rectIntersection,
 	useSensor,
 	useSensors,
 } from "@dnd-kit/core";
@@ -178,7 +176,7 @@ const KanbanBoard = () => {
 				>
 					{activeIssue ? (
 						<Card
-							color={"bg-yellow-200"}
+							color={activeIssue.color}
 							task={activeIssue?.name}
 							storyPoints={activeIssue?.storyPoint}
 							avatar={activeIssue?.assignee?.image}
