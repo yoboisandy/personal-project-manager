@@ -36,6 +36,7 @@ const KanbanBoard = () => {
 
 	useEffect(() => {
 		const temp: any = {};
+		console.log("TEMP DATA", tempData);
 		tempData.forEach((item: any) => {
 			temp[item.id] = item.issues;
 		});
@@ -66,8 +67,12 @@ const KanbanBoard = () => {
 	function handleDragOver(event: any) {
 		console.log("drag over", event);
 		const { active, over, draggingRect } = event;
-		const { id } = active;
-		const { id: overId } = over;
+		let { id } = active;
+		let { id: overId } = over;
+
+		if (id in items && !(overId in items)) {
+			overId = findContainer(overId);
+		}
 
 		if (id in items && overId in items && id != overId) {
 			setTempData((prev: any) => {
@@ -80,6 +85,7 @@ const KanbanBoard = () => {
 
 				return arrayMove(prev, activeIndex, overIndex);
 			});
+
 			return;
 		}
 
@@ -174,11 +180,66 @@ const KanbanBoard = () => {
 				],
 			};
 		});
+
+		setTempData((prev: any) => {
+			return [
+				...prev.map((item: any) => {
+					if (item.id == activeContainer) {
+						return {
+							...item,
+							issues: [
+								...item.issues.filter(
+									(item: any) => item.id != active.id
+								),
+							],
+						};
+					}
+					if (item.id == overContainer) {
+						const activeIndex = items[activeContainer].findIndex(
+							(item: any) => item.id == id
+						);
+						const overIndex = items[overContainer].findIndex(
+							(item: any) => item.id == overId
+						);
+						return {
+							...item,
+							issues: [
+								...item.issues.slice(0, overIndex),
+								items[activeContainer][activeIndex],
+								...item.issues.slice(
+									overIndex,
+									item.issues.length
+								),
+							],
+						};
+					}
+					return item;
+				}),
+			];
+		});
 	}
 
 	const { setNodeRef } = useDroppable({
 		id: "board",
 	});
+
+	const addColumn = () => {
+		setTempData((prev: any) => [
+			...prev,
+			{
+				id: prev.length + 1,
+				name: `Column ${prev.length + 1}`,
+				done: 0,
+				order: prev.length + 1,
+				issues: [],
+			},
+		]);
+
+		setItems((prev: any) => ({
+			...prev,
+			[prev.length + 1]: [],
+		}));
+	};
 
 	return (
 		items && (
@@ -195,7 +256,7 @@ const KanbanBoard = () => {
 					id="board"
 				>
 					<div
-						className="m-10 min-h-[550px] w-full overflow-x-auto no-scrollbar flex gap-8"
+						className="px-10 py-5  min-h-[550px] w-full overflow-x-auto no-scrollbar flex gap-8"
 						ref={setNodeRef}
 					>
 						{tempData.map((item: any) => (
@@ -203,9 +264,17 @@ const KanbanBoard = () => {
 								key={`${item.id}`}
 								id={item.id}
 								title={item.name}
-								issues={items[item.id]}
+								issues={items[item.id] || []}
 							/>
 						))}
+						<div className="min-w-[300px]">
+							<button
+								className="text-lg font-semibold bg-gray-50 p-2 rounded-t-lg"
+								onClick={addColumn}
+							>
+								Add Column
+							</button>
+						</div>
 					</div>
 				</SortableContext>
 				<DragOverlay

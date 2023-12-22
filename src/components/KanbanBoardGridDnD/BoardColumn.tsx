@@ -24,7 +24,7 @@ const BoardColumn = ({
 		id: id,
 	});
 
-	console.log("issues" + id, issues);
+	// console.log("issues" + id, issues);
 
 	const {
 		isDragging,
