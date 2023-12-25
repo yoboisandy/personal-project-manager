@@ -21,6 +21,7 @@ const Task = ({
 	id: string;
 }) => {
 	const {
+		isOver,
 		isDragging,
 		attributes,
 		listeners,
@@ -32,6 +33,7 @@ const Task = ({
 	const style = {
 		transform: CSS.Transform.toString(transform),
 		transition,
+		opacity: isDragging ? 0.3 : 1,
 	};
 
 	return (

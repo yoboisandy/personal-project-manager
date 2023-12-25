@@ -27,6 +27,7 @@ const BoardColumn = ({
 	// console.log("issues" + id, issues);
 
 	const {
+		isOver,
 		isDragging,
 		attributes,
 		listeners,
@@ -40,6 +41,7 @@ const BoardColumn = ({
 	const style = {
 		transform: CSS.Transform.toString(transform),
 		transition,
+		opacity: isDragging ? 0.3 : 1,
 	};
 
 	return (
